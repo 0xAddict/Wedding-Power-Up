@@ -46,6 +46,7 @@ async function removeDependencyPair(t, currentCardId, targetCardId) {
   const nextB = (B.blocks || []).filter((id) => id !== currentCardId);
   await setBlocksForCard(t, targetCardId, nextB);
 }
+
 async function checklistSummary(t) {
   // Get display mode for checklist from board settings; default to 'next'
   const mode = (await t.get('board', 'shared', 'checklistDisplayMode')) || 'next';
@@ -81,26 +82,7 @@ async function checklistSummary(t) {
   return {
     text,
     icon: LOCAL_ICON,
-    title: 'Checklist summary',
-  };
-}
-async function checklistSummary(t) {
-  const card = await t.card('checklists', 'id', 'name', 'badges');
-  let total = 0, done = 0, firstTitles = [];
-  (card.checklists || []).forEach(cl => {
-    (cl.checkItems || []).forEach(ci => {
-      total += 1;
-      if (ci.state === 'complete') done += 1;
-      else if (firstTitles.length < 2) firstTitles.push(ci.name);
-    });
-  });
-  const text = total > 0
-    ? `☑︎ ${done}/${total}` + (firstTitles.length ? ` • ${truncate(firstTitles.join(' • '), 36)}` : '')
-    : '☑︎ No checklist';
-  return {
-    text,
-    icon: LOCAL_ICON,
-    title: 'Checklist summary (first 2 incomplete items)',
+    title: 'Checklist summary'
   };
 }
 
@@ -116,16 +98,16 @@ async function dependencyBadges(t) {
       url: t.signUrl('./modal.html'),
       title: 'Dependencies',
       fullscreen: false,
-      height: 640,
+      height: 640
     }),
-    icon: LOCAL_ICON,
+    icon: LOCAL_ICON
   };
 
   const blocksBadge = {
     text: blocks.length ? `🚧 Blocking ${blocks.length}` : '🚧 Not blocking',
     color: blocks.length ? 'yellow' : null,
     title: blocks.length ? 'This card blocks other cards.' : 'Not blocking any cards.',
-    icon: LOCAL_ICON,
+    icon: LOCAL_ICON
   };
 
   return [dependsBadge, blocksBadge];
@@ -191,7 +173,7 @@ TrelloPowerUp.initialize({
   'show-settings': function (t) {
     return t.popup({
       title: 'Checklist & Dependencies – Settings',
-      url: './settings.html',
+      url: './settings.html'
     });
   }
 });
