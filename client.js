@@ -46,7 +46,44 @@ async function removeDependencyPair(t, currentCardId, targetCardId) {
   const nextB = (B.blocks || []).filter((id) => id !== currentCardId);
   await setBlocksForCard(t, targetCardId, nextB);
 }
-
+async function checklistSummary(t) {
+  // Get display mode for checklist from board settings; default to 'next'
+  const mode = (await t.get('board', 'shared', 'checklistDisplayMode')) || 'next';
+  const card = await t.card('checklists', 'id', 'name', 'badges');
+  let total = 0;
+  let done = 0;
+  const allItems = [];
+  const upcomingItems = [];
+  (card.checklists || []).forEach(cl => {
+    (cl.checkItems || []).forEach(ci => {
+      total += 1;
+      const name = ci.name;
+      if (ci.state === 'complete') {
+        done += 1;
+      }
+      allItems.push(name);
+      if (ci.state !== 'complete') {
+        upcomingItems.push(name);
+      }
+    });
+  });
+  let namesToShow = [];
+  if (mode === 'all') {
+    namesToShow = allItems;
+  } else if (mode === 'upcoming') {
+    namesToShow = upcomingItems;
+  } else {
+    namesToShow = upcomingItems.slice(0, 1);
+  }
+  const text = total > 0
+    ? `☑︎ ${done}/${total}` + (namesToShow.length ? ` • ${truncate(namesToShow.join(' • '), 36)}` : '')
+    : '☑︎ No checklist';
+  return {
+    text,
+    icon: LOCAL_ICON,
+    title: 'Checklist summary',
+  };
+}
 async function checklistSummary(t) {
   const card = await t.card('checklists', 'id', 'name', 'badges');
   let total = 0, done = 0, firstTitles = [];
