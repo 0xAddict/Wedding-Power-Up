@@ -18,3 +18,11 @@ hr { border:none; border-top:1px solid #e5e7eb; margin:12px 0; }
 ul.inline { list-style:none; padding:0; margin:0; display:flex; flex-wrap:wrap; gap:6px; }
 ul.inline li { display:inline-flex; align-items:center; gap:6px; padding:4px 8px; border-radius:999px; background:#f3f4f6; }
 code.k { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 12px; padding:2px 4px; background:#f3f4f6; border-radius:6px; }
+
+/* Improve dependency modal styling */
+.list-item {
+  justify-content: space-between;
+}
+.list-item:hover {
+  background: #f9fafb;
+}
