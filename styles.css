@@ -26,3 +26,14 @@ code.k { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Li
 .list-item:hover {
   background: #f9fafb;
 }
+
+/* Added by wedding agent: improved dependency modal styling */
+.dependency-menu {
+  background-color: #ffffff;
+  color: #1f2937;
+  padding: 8px;
+}
+.dependency-menu a {
+  color: #2563eb;
+  text-decoration: underline;
+}
