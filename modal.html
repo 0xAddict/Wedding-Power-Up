@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dependencies</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script src="https://p.trellocdn.com/power-up.min.js"></script>
+</head>
+<body>
+  <div class="host">
+    <h1>Card Dependencies</h1>
+    <div class="small">Link cards that this card depends on. We'll also mark the reverse relation automatically.</div>
+    <hr/>
+
+    <div class="row">
+      <input id="filter" placeholder="Search cards by name…" />
+      <input id="pasteUrl" placeholder="Paste a Trello card URL and press Enter" />
+    </div>
+    <div id="selected" class="small" style="margin-top:8px;"></div>
+
+    <div id="list" class="list" aria-label="Cards"></div>
+
+    <hr/>
+    <div class="row">
+      <button id="save" class="btn">Save</button>
+      <button id="close" class="btn">Close</button>
+    </div>
+  </div>
+
+  <script src="./modal.js"></script>
+</body>
+</html>

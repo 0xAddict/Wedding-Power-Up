@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Settings</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script src="https://p.trellocdn.com/power-up.min.js"></script>
+</head>
+<body>
+  <div class="host">
+    <h1>Settings</h1>
+    <div class="small">Nothing to configure yet. Future ideas: define what “done” means, choose how many checklist items to preview, etc.</div>
+    <div style="margin-top:12px;">
+      <button id="close" class="btn">Close</button>
+    </div>
+  </div>
+  <script>
+    const t = TrelloPowerUp.iframe();
+    document.getElementById('close').addEventListener('click', () => t.closePopup());
+  </script>
+</body>
+</html>
