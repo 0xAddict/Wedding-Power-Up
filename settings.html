@@ -1,23 +1,46 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Settings</title>
-  <link rel="stylesheet" href="./styles.css">
-  <script src="https://p.trellocdn.com/power-up.min.js"></script>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Settings</title>
+<link rel="stylesheet" href="./styles.css">
+<script src="https://p.trellocdn.com/power-up.min.js"></script>
 </head>
 <body>
   <div class="host">
     <h1>Settings</h1>
-    <div class="small">Nothing to configure yet. Future ideas: define what “done” means, choose how many checklist items to preview, etc.</div>
+    <div class="small">
+      Select how to display checklist items on card badges.
+    </div>
     <div style="margin-top:12px;">
+      <label for="mode">Checklist display mode:</label>
+      <select id="mode">
+        <option value="next">Show only next upcoming task</option>
+        <option value="upcoming">Show all upcoming tasks</option>
+        <option value="all">Show all items (completed & incomplete)</option>
+      </select>
+    </div>
+    <div style="margin-top:12px;">
+      <button id="save" class="btn">Save</button>
       <button id="close" class="btn">Close</button>
     </div>
   </div>
-  <script>
-    const t = TrelloPowerUp.iframe();
-    document.getElementById('close').addEventListener('click', () => t.closePopup());
-  </script>
+<script>
+const t = TrelloPowerUp.iframe();
+window.addEventListener('DOMContentLoaded', async () => {
+  const modeSelect = document.getElementById('mode');
+  const current = await t.get('board', 'shared', 'checklistDisplayMode');
+  if (current) {
+    modeSelect.value = current;
+  }
+});
+document.getElementById('save').addEventListener('click', async () => {
+  const mode = document.getElementById('mode').value;
+  await t.set('board', 'shared', 'checklistDisplayMode', mode);
+  t.closePopup();
+});
+document.getElementById('close').addEventListener('click', () => t.closePopup());
+</script>
 </body>
 </html>
