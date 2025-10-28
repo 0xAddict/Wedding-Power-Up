@@ -114,12 +114,30 @@ async function dependencyBadges(t) {
 }
 
 // Capability registration
-// Main initialization for the Power-Up
+// Main initialization
 window.TrelloPowerUp.initialize({
 
-  // Adds a button on each card to open the dependency selector modal
+  // 1. Buttons shown on the card front
   'card-buttons': function (t, opts) {
     return [
+      // If you still want a dynamic checklist summary badge
+      {
+        dynamic: function () {
+          return checklistSummary(t);
+        }
+      },
+      // A dynamic badge for dependencies (depends/blocks)
+      {
+        dynamic: function () {
+          return dependencyBadges(t).then(arr => arr[0]);
+        }
+      },
+      {
+        dynamic: function () {
+          return dependencyBadges(t).then(arr => arr[1]);
+        }
+      },
+      // A static button to open the modal
       {
         icon: ICON,
         text: 'Dependencies',
@@ -134,21 +152,13 @@ window.TrelloPowerUp.initialize({
     ];
   },
 
-  // Adds a settings option in the Power-Up menu
-  'show-settings': function (t, opts) {
-    return t.popup({
-      title: 'Power‑Up Settings',
-      url: './settings.html',
-      height: 200
-    });
-  },
-
-  // NEW: Show badge counts on the card face for dependencies and blockers
+  // 2. Badges shown on the card detail view (front of card)
   'card-detail-badges': function (t, opts) {
+    // Show counts of dependencies and blockers
     return Promise.all([
       t.get('card', 'shared', 'dependsOn'),
       t.get('card', 'shared', 'blocks')
-    ]).then(function ([dependsOn = [], blocks = []]) {
+    ]).then(([dependsOn = [], blocks = []]) => {
       const badges = [];
       if (dependsOn.length) {
         badges.push({
@@ -182,14 +192,49 @@ window.TrelloPowerUp.initialize({
     });
   },
 
-  // NEW: Add a section on the back of the card listing dependencies with links
+  // 3. Optional verbose badges (if you prefer the older style)
+  // If you no longer need these, you can delete this function.
+  // 'card-badges': function (t, opts) {
+  //   return Promise.all([t.card('id', 'name'), getDependenciesForCard(t)])
+  //     .then(async ([card, dep]) => {
+  //       // Look up card names for nicer tooltips
+  //       const allCards = await t.cards('id', 'name', 'shortLink', 'url');
+  //       const byId = Object.fromEntries(allCards.map(c => [c.id, c]));
+  //       const depNames  = (dep.dependsOn || []).map(id => byId[id]?.name || id).slice(0, 5);
+  //       const blockNames = (dep.blocks || []).map(id => byId[id]?.name || id).slice(0, 5);
+  //       return [
+  //         {
+  //           text: dep.dependsOn.length ? `Depends on: ${dep.dependsOn.length}` : 'Depends on: none',
+  //           icon: LOCAL_ICON,
+  //           title: dep.dependsOn.length ? `Prerequisites:\n- ${depNames.join('\n- ')}` : 'No dependencies',
+  //           callback: () => t.modal({ url: t.signUrl('./modal.html'), title: 'Dependencies', height: 640 })
+  //         },
+  //         {
+  //           text: dep.blocks.length ? `Blocking: ${dep.blocks.length}` : 'Blocking: none',
+  //           icon: LOCAL_ICON,
+  //           title: dep.blocks.length ? `Blocking:\n- ${blockNames.join('\n- ')}` : 'Not blocking'
+  //         }
+  //       ];
+  //     });
+  // },
+
+  // 4. Settings menu
+  'show-settings': function (t, opts) {
+    return t.popup({
+      title: 'Power‑Up Settings',
+      url: './settings.html',
+      height: 200
+    });
+  },
+
+  // 5. Section on the card back to list dependencies
   'card-back-section': function (t, opts) {
     return t.get('card', 'shared', 'dependsOn')
       .then(function (dependsOn = []) {
         if (!dependsOn || dependsOn.length === 0) {
           return;
         }
-        // Build a list of clickable dependency links using short card IDs
+        // Build clickable links using short card IDs
         const listItems = dependsOn.map(function (id) {
           return (
             '<li>' +
@@ -201,7 +246,7 @@ window.TrelloPowerUp.initialize({
         }).join('');
         return {
           title: 'Dependencies',
-          icon: ICON, // you can customise the icon here
+          icon: ICON,
           content: {
             type: 'text',
             html: '<ul>' + listItems + '</ul>'
