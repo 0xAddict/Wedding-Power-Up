@@ -185,24 +185,22 @@ window.TrelloPowerUp.initialize({
 
   // Card back section listing dependencies as clickable links
   'card-back-section': function (t) {
-    return t.get('card', 'shared', 'dependsOn')
-      .then(function (dependsOn = []) {
-        if (!dependsOn.length) {
-          return;
+  return t.get('card', 'shared', 'dependsOn')
+    .then(function (dependsOn = []) {
+      if (!dependsOn.length) {
+        return;
+      }
+      return {
+        title: 'Dependencies',
+        icon: ICON,
+        content: {
+          type: 'iframe',
+          url: t.signUrl('./dependencies-section.html'),
+          height: 80
         }
-        const listItems = dependsOn.map(function (id) {
-          return '<li><a href="https://trello.com/c/' + id + '" target="_blank">' + id + '</a></li>';
-        }).join('');
-        return {
-          title: 'Dependencies',
-          icon: ICON,
-          content: {
-            type: 'text',
-            html: '<ul>' + listItems + '</ul>'
-          }
-        };
-      });
-  },
+      };
+    });
+},
 
   // Settings popup
   'show-settings': function (t) {
