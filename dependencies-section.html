@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { font-family: sans-serif; margin: 0; padding: 0.5rem; }
+    li { margin-bottom: 0.25rem; }
+  </style>
+  <script src="https://p.trellocdn.com/power-up.min.js"></script>
+</head>
+<body>
+  <div id="deps"></div>
+  <script>
+    const t = TrelloPowerUp.iframe();
+    t.get('card', 'shared', 'dependsOn')
+      .then(function(dependsOn) {
+        if (!dependsOn || dependsOn.length === 0) {
+          document.getElementById('deps').innerHTML = '<p>No dependencies</p>';
+          return;
+        }
+        const links = dependsOn.map(function(id) {
+          return '<li><a href="https://trello.com/c/' + id + '" target="_blank">' + id + '</a></li>';
+        }).join('');
+        document.getElementById('deps').innerHTML = '<strong>Dependencies:</strong><ul>' + links + '</ul>';
+      });
+  </script>
+</body>
+</html>
