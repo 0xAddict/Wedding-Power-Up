@@ -94,13 +94,13 @@ function renderList() {
     const row = document.createElement('div');
     row.className = 'list-item';
     row.innerHTML = `
-      <input type="checkbox" ${checked ? 'checked' : ''} data-id="${id}"/>
-      <div style="flex:1">
-        <div>${c.name}</div>
-        <div class="small">${c.url}</div>
-      </div>
-    `;
-    row.querySelector('input').addEventListener('change', (e) => {
+  <input type="checkbox" ${checked ? 'checked' : ''} data-id="${id}"/>
+  <div style="flex:1">
+    <div>${c.name}</div>
+    <div class="small"><a href="${c.url}" target="_blank">${c.url}</a></div>
+  </div>
+`;
+  row.querySelector('input').addEventListener('change', (e) => {
       toggleCard(id, e.target.checked);
       renderSelected();
     });
