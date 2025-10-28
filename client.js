@@ -113,35 +113,27 @@ async function dependencyBadges(t) {
   return [dependsBadge, blocksBadge];
 }
 
-// Capability registration
-// Main initialization
 window.TrelloPowerUp.initialize({
+  // Small badges on the card front
+  'card-badges': function (t, opts) {
+    // Show a checklist summary badge and dependency badges
+    return Promise.all([
+      checklistSummary(t),             // returns a badge for checklist progress
+      dependencyBadges(t).then(arr => arr[0]), // returns a badge for “depends on”
+      dependencyBadges(t).then(arr => arr[1])  // returns a badge for “blocking”
+    ]).then(badgeArrays => {
+      // `badgeArrays` is an array of arrays (because dependencyBadges returns [dependsBadge, blocksBadge])
+      return badgeArrays.flat().filter(Boolean);
+    });
+  },
 
-  // 1. Buttons shown on the card front
-  'card-buttons': function (t, opts) {
+  // Buttons on the card front
+  'card-buttons': function (t) {
     return [
-      // If you still want a dynamic checklist summary badge
-      {
-        dynamic: function () {
-          return checklistSummary(t);
-        }
-      },
-      // A dynamic badge for dependencies (depends/blocks)
-      {
-        dynamic: function () {
-          return dependencyBadges(t).then(arr => arr[0]);
-        }
-      },
-      {
-        dynamic: function () {
-          return dependencyBadges(t).then(arr => arr[1]);
-        }
-      },
-      // A static button to open the modal
       {
         icon: ICON,
         text: 'Dependencies',
-        callback: function (t) {
+        callback: function () {
           return t.modal({
             url: './modal.html',
             height: 500,
@@ -152,9 +144,8 @@ window.TrelloPowerUp.initialize({
     ];
   },
 
-  // 2. Badges shown on the card detail view (front of card)
-  'card-detail-badges': function (t, opts) {
-    // Show counts of dependencies and blockers
+  // Larger badges in the detail view, as added earlier
+  'card-detail-badges': function (t) {
     return Promise.all([
       t.get('card', 'shared', 'dependsOn'),
       t.get('card', 'shared', 'blocks')
@@ -192,57 +183,15 @@ window.TrelloPowerUp.initialize({
     });
   },
 
-  // 3. Optional verbose badges (if you prefer the older style)
-  // If you no longer need these, you can delete this function.
-  // 'card-badges': function (t, opts) {
-  //   return Promise.all([t.card('id', 'name'), getDependenciesForCard(t)])
-  //     .then(async ([card, dep]) => {
-  //       // Look up card names for nicer tooltips
-  //       const allCards = await t.cards('id', 'name', 'shortLink', 'url');
-  //       const byId = Object.fromEntries(allCards.map(c => [c.id, c]));
-  //       const depNames  = (dep.dependsOn || []).map(id => byId[id]?.name || id).slice(0, 5);
-  //       const blockNames = (dep.blocks || []).map(id => byId[id]?.name || id).slice(0, 5);
-  //       return [
-  //         {
-  //           text: dep.dependsOn.length ? `Depends on: ${dep.dependsOn.length}` : 'Depends on: none',
-  //           icon: LOCAL_ICON,
-  //           title: dep.dependsOn.length ? `Prerequisites:\n- ${depNames.join('\n- ')}` : 'No dependencies',
-  //           callback: () => t.modal({ url: t.signUrl('./modal.html'), title: 'Dependencies', height: 640 })
-  //         },
-  //         {
-  //           text: dep.blocks.length ? `Blocking: ${dep.blocks.length}` : 'Blocking: none',
-  //           icon: LOCAL_ICON,
-  //           title: dep.blocks.length ? `Blocking:\n- ${blockNames.join('\n- ')}` : 'Not blocking'
-  //         }
-  //       ];
-  //     });
-  // },
-
-  // 4. Settings menu
-  'show-settings': function (t, opts) {
-    return t.popup({
-      title: 'Power‑Up Settings',
-      url: './settings.html',
-      height: 200
-    });
-  },
-
-  // 5. Section on the card back to list dependencies
-  'card-back-section': function (t, opts) {
+  // Card back section listing dependencies as clickable links
+  'card-back-section': function (t) {
     return t.get('card', 'shared', 'dependsOn')
       .then(function (dependsOn = []) {
-        if (!dependsOn || dependsOn.length === 0) {
+        if (!dependsOn.length) {
           return;
         }
-        // Build clickable links using short card IDs
         const listItems = dependsOn.map(function (id) {
-          return (
-            '<li>' +
-              '<a href="https://trello.com/c/' + id + '" target="_blank">' +
-                id +
-              '</a>' +
-            '</li>'
-          );
+          return '<li><a href="https://trello.com/c/' + id + '" target="_blank">' + id + '</a></li>';
         }).join('');
         return {
           title: 'Dependencies',
@@ -253,6 +202,14 @@ window.TrelloPowerUp.initialize({
           }
         };
       });
-  }
+  },
 
+  // Settings popup
+  'show-settings': function (t) {
+    return t.popup({
+      title: 'Power‑Up Settings',
+      url: './settings.html',
+      height: 200
+    });
+  }
 });
