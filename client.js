@@ -114,100 +114,25 @@ async function dependencyBadges(t) {
 }
 
 window.TrelloPowerUp.initialize({
-  // Small badges on the card front
-  'card-badges': function (t, opts) {
-    // Show a checklist summary badge and dependency badges
-    return Promise.all([
-      checklistSummary(t),             // returns a badge for checklist progress
-      dependencyBadges(t).then(arr => arr[0]), // returns a badge for “depends on”
-      dependencyBadges(t).then(arr => arr[1])  // returns a badge for “blocking”
-    ]).then(badgeArrays => {
-      // `badgeArrays` is an array of arrays (because dependencyBadges returns [dependsBadge, blocksBadge])
-      return badgeArrays.flat().filter(Boolean);
-    });
-  },
-
-  // Buttons on the card front
-  'card-buttons': function (t) {
-    return [
-      {
-        icon: ICON,
-        text: 'Dependencies',
-        callback: function () {
-          return t.modal({
-            url: './modal.html',
-            height: 500,
-            fullscreen: false
-          });
-        }
-      }
-    ];
-  },
-
-  // Larger badges in the detail view, as added earlier
-  'card-detail-badges': function (t) {
-    return Promise.all([
-      t.get('card', 'shared', 'dependsOn'),
-      t.get('card', 'shared', 'blocks')
-    ]).then(([dependsOn = [], blocks = []]) => {
-      const badges = [];
-      if (dependsOn.length) {
-        badges.push({
-          title: 'Depends on',
-          text: dependsOn.length.toString(),
-          color: 'yellow',
-          callback: function (t) {
-            return t.modal({
-              url: './modal.html',
-              height: 500,
-              fullscreen: false
-            });
-          }
-        });
-      }
-      if (blocks.length) {
-        badges.push({
-          title: 'Blocked by',
-          text: blocks.length.toString(),
-          color: 'red',
-          callback: function (t) {
-            return t.modal({
-              url: './modal.html',
-              height: 500,
-              fullscreen: false
-            });
-          }
-        });
-      }
-      return badges;
-    });
-  },
-
-  // Card back section listing dependencies as clickable links
+  'card-badges': …,
+  'card-buttons': …,
+  'card-detail-badges': …,
   'card-back-section': function (t) {
-  return t.get('card', 'shared', 'dependsOn')
-    .then(function (dependsOn = []) {
-      if (!dependsOn.length) {
-        return;
-      }
-      return {
-        title: 'Dependencies',
-        icon: ICON,
-        content: {
-          type: 'iframe',
-          url: t.signUrl('./dependencies-section.html'),
-          height: 80
+    return t.get('card', 'shared', 'dependsOn')
+      .then(function (dependsOn = []) {
+        if (!dependsOn.length) {
+          return;
         }
-      };
-    });
-},
-
-  // Settings popup
-  'show-settings': function (t) {
-    return t.popup({
-      title: 'Power‑Up Settings',
-      url: './settings.html',
-      height: 200
-    });
-  }
+        return {
+          title: 'Dependencies',
+          icon: ICON,
+          content: {
+            type: 'iframe',
+            url: t.signUrl('./dependencies-section.html'),
+            height: 80
+          }
+        };
+      });
+  },
+  'show-settings': …
 });
